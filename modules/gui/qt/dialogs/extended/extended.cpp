@@ -39,6 +39,66 @@
 #include <vlc_configuration.h>
 #include <vlc_modules.h>
 
+/* Figma "Adjustments and Effects" look: #191919 window, #1B1B1B cards,
+ * #090909 fields/grooves, brown slider fill + orange handle. */
+static const char * const kFigmaExtendedStyleSheet = R"QSS(
+QDialog, QTabWidget > QWidget { background: #191919; }
+QWidget { color: #8F8F8F; }
+QLabel { background: transparent; color: #6B6B6B; }
+QLabel:disabled { color: #404040; }
+
+QTabWidget::pane { border: none; border-radius: 6px; background: #1B1B1B; top: 6px; }
+QTabBar { background: transparent; }
+QTabBar::tab { background: #090909; color: #6B6B6B; border: none; border-radius: 6px;
+               padding: 7px 14px; margin: 0 4px 0 0; }
+QTabBar::tab:hover { background: #222222; color: #8F8F8F; }
+QTabBar::tab:selected { background: #1B1B1B; color: #D37918; }
+
+QGroupBox { background: #1B1B1B; border: none; border-radius: 6px; margin-top: 22px; padding: 14px 12px 10px 12px; }
+QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; left: 12px; padding: 0 4px; color: #6B6B6B; }
+
+QSlider::groove:horizontal { height: 16px; background: #090909; border-radius: 6px; }
+QSlider::sub-page:horizontal { background: #371F06; border-radius: 4px; margin: 2px; }
+QSlider::add-page:horizontal { background: transparent; }
+QSlider::handle:horizontal { background: #AB6314; width: 8px; margin: -4px 0; border-radius: 4px; }
+QSlider::groove:vertical { width: 16px; background: #090909; border-radius: 6px; }
+QSlider::sub-page:vertical { background: #371F06; border-radius: 4px; margin: 2px; }
+QSlider::add-page:vertical { background: transparent; }
+QSlider::handle:vertical { background: #AB6314; height: 8px; margin: 0 -4px; border-radius: 4px; }
+QSlider::handle:horizontal:disabled, QSlider::handle:vertical:disabled { background: #404040; }
+QSlider::sub-page:disabled { background: #222222; }
+
+QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox { background: #090909; color: #8F8F8F; border: 1px solid #191919;
+               border-radius: 5px; padding: 5px 8px; min-height: 22px; selection-background-color: #AB6314; selection-color: #090909; }
+QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus, QComboBox:focus { border: 1px solid #AB6314; }
+QLineEdit:disabled, QSpinBox:disabled, QDoubleSpinBox:disabled, QComboBox:disabled { color: #404040; }
+QSpinBox::up-button, QSpinBox::down-button, QDoubleSpinBox::up-button, QDoubleSpinBox::down-button { width: 0; border: none; }
+QComboBox::drop-down { border: none; width: 24px; }
+QComboBox::down-arrow { image: url(:/figma/chevron_down.svg); width: 16px; height: 16px; }
+QComboBox QAbstractItemView { background: #191919; color: #8F8F8F; border: 1px solid #090909; outline: 0;
+               selection-background-color: #222222; selection-color: #D37918; }
+
+QCheckBox, QGroupBox::indicator { spacing: 10px; }
+QCheckBox::indicator, QGroupBox::indicator { width: 68px; height: 32px; }
+QCheckBox::indicator:unchecked, QGroupBox::indicator:unchecked { image: url(:/figma/toggle_off.svg); }
+QCheckBox::indicator:checked, QGroupBox::indicator:checked { image: url(:/figma/toggle_on.svg); }
+
+QPushButton, QToolButton { background: #090909; color: #8F8F8F; border: none; border-radius: 6px; padding: 7px 16px; min-height: 18px; }
+QPushButton:hover, QToolButton:hover { background: #222222; }
+QPushButton:pressed, QToolButton:pressed { background: #404040; }
+QPushButton:default { color: #D37918; }
+QPushButton:disabled, QToolButton:disabled { color: #404040; }
+
+QScrollBar:vertical { background: transparent; width: 8px; margin: 0; }
+QScrollBar::handle:vertical { background: #404040; border-radius: 4px; min-height: 24px; }
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+QScrollBar:horizontal { background: transparent; height: 8px; margin: 0; }
+QScrollBar::handle:horizontal { background: #404040; border-radius: 4px; min-width: 24px; }
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal { width: 0; }
+
+QToolTip { background: #191919; color: #8F8F8F; border: 1px solid #222222; padding: 4px; }
+)QSS";
+
 ExtendedDialog::ExtendedDialog( qt_intf_t *_p_intf )
                : QVLCDialog( nullptr, _p_intf )
 {
@@ -51,6 +111,7 @@ ExtendedDialog::ExtendedDialog( qt_intf_t *_p_intf )
     setWindowOpacity( var_InheritFloat( p_intf, "qt-opacity" ) );
     setWindowTitle( qtr( "Adjustments and Effects" ) );
     setWindowRole( "vlc-extended" );
+    setStyleSheet( QString::fromUtf8( kFigmaExtendedStyleSheet ) );
 
     QVBoxLayout *layout = new QVBoxLayout( this );
     layout->setContentsMargins( 0, 2, 0, 1 );

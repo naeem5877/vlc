@@ -36,9 +36,30 @@ class VLCMenu : public QMenu
     Q_OBJECT
 
 public:
+    // Figma menu: #191919 rounded card, #8F8F8F text, #222222 hover
+    static constexpr const char* figmaStyleSheet = R"QSS(
+QMenu { background: #191919; border: none; border-radius: 10px; padding: 8px 0; color: #8F8F8F; }
+QMenu::item { background: transparent; border-radius: 6px; margin: 0 8px; padding: 10px 28px 10px 36px; }
+QMenu::item:selected { background: #222222; color: #B0B0B0; }
+QMenu::item:disabled { color: #404040; }
+QMenu::icon { padding-left: 10px; }
+QMenu::indicator { left: 10px; width: 16px; height: 16px; }
+QMenu::separator { height: 1px; background: #222222; margin: 6px 16px; }
+QMenu::right-arrow { image: url(:/figma/chevron_right.svg); width: 16px; height: 16px; margin-right: 10px; }
+)QSS";
+
+    void applyFigmaStyle()
+    {
+        setWindowFlag(Qt::FramelessWindowHint, true);
+        setWindowFlag(Qt::NoDropShadowWindowHint, true);
+        setAttribute(Qt::WA_TranslucentBackground, true);
+        setStyleSheet(QString::fromUtf8(figmaStyleSheet));
+    }
+
     explicit VLCMenu(qt_intf_t* p_intf) : QMenu()
     {
         assert(p_intf);
+        applyFigmaStyle();
         if (isWindow())
         {
             QVLCDialog::setWindowTransientParent(this, nullptr, p_intf);

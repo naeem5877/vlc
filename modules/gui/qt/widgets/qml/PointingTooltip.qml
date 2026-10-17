@@ -24,8 +24,8 @@ ToolTipExt {
     id: pointingTooltip
 
     margins: 0
-    padding: VLCStyle.margin_xxsmall
-    radius: VLCStyle.dp(6, VLCStyle.scale)
+    padding: VLCStyle.margin_xsmall
+    radius: VLCStyle.dp(10, VLCStyle.scale)
 
     height: implicitHeight + background.arrowHeight
     bottomInset: height - implicitHeight

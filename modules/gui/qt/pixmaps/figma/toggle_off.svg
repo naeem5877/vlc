@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="68" height="32" viewBox="0 0 68 32" fill="none">
+<rect width="68" height="32" rx="6" fill="#090909"/>
+<rect x="3" y="3" width="26" height="26" rx="3" fill="#404040"/>
+<rect x="32" y="3" width="33" height="26" rx="3" fill="#191919"/>
+<text x="48.5" y="20.5" text-anchor="middle" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#6B6B6B">OFF</text>
+</svg>

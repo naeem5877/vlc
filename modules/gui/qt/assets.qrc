@@ -90,6 +90,8 @@
         <file alias="nav_video.svg">pixmaps/figma/nav_video.svg</file>
         <file alias="nav_video_active.svg">pixmaps/figma/nav_video_active.svg</file>
         <file alias="nav_video_current.svg">pixmaps/figma/nav_video_current.svg</file>
+        <file alias="toggle_off.svg">pixmaps/figma/toggle_off.svg</file>
+        <file alias="toggle_on.svg">pixmaps/figma/toggle_on.svg</file>
     </qresource>
     <qresource prefix="/menu">
         <file alias="add.svg">pixmaps/menu/add.svg</file>

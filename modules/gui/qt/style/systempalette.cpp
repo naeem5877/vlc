@@ -839,8 +839,8 @@ void SystemPalette::makeDarkPalette()
     //tooltip
     {
         C::ColorSet CS = C::Tooltip;
-        setColor(CS, C::Bg, C::Primary, C::Normal, darkGrey200);
-        setColor(CS, C::Fg, C::Primary, C::Normal, Qt::white);
+        setColor(CS, C::Bg, C::Primary, C::Normal, QColor("#191919")); // Figma: seek bar thumbnail card
+        setColor(CS, C::Fg, C::Primary, C::Normal, QColor("#8F8F8F"));
     }
 
     //slider
