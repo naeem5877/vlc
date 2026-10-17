@@ -28,6 +28,7 @@ Widgets.IconToolButton {
 
     enabled: Player.hasVideoOutput
     text: Player.fullscreen ? VLCIcons.defullscreen :VLCIcons.fullscreen
+    figmaIcon: Player.fullscreen ? "fullscreen_exit" : "fullscreen"
     onClicked: Player.fullscreen = !Player.fullscreen
     description: qsTr("fullscreen")
 

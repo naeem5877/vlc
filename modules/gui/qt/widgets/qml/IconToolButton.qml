@@ -105,19 +105,55 @@ T.ToolButton {
         radius: control.radius
     }
 
-    contentItem: Widgets.IconLabel {
-        text: control.text
+    // Name of an SVG in qrc:///figma/ (without extension). When set, it is
+    // drawn instead of the font glyph in `text`.
+    property string figmaIcon: ""
+    property real figmaIconSize: control.font.pixelSize
 
-        color: control.color
+    contentItem: Loader {
+        sourceComponent: control.figmaIcon !== "" ? figmaIconComponent
+                                                  : glyphIconComponent
+    }
 
-        DelayedBehavior on color {
-            delayedEnabled: theme.initialized
+    Component {
+        id: glyphIconComponent
 
-            ColorAnimation {
-                duration: VLCStyle.duration_long
+        Widgets.IconLabel {
+            text: control.text
+
+            color: control.color
+
+            DelayedBehavior on color {
+                delayedEnabled: theme.initialized
+
+                ColorAnimation {
+                    duration: VLCStyle.duration_long
+                }
             }
-        }
 
-        font: control.font
+            font: control.font
+        }
+    }
+
+    Component {
+        id: figmaIconComponent
+
+        Image {
+            implicitWidth: control.figmaIconSize
+            implicitHeight: control.figmaIconSize
+
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+
+            sourceSize: Qt.size(width * Screen.devicePixelRatio,
+                                height * Screen.devicePixelRatio)
+
+            source: SVGColorImage.colorize("qrc:///figma/" + control.figmaIcon + ".svg")
+                        .any({
+                            "#8F8F8F": control.color,
+                            "#D37918": theme.accent,
+                            "#AB6314": Qt.alpha(theme.accent, 0.7)
+                        }).uri()
+        }
     }
 }

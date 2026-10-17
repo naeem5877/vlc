@@ -30,6 +30,7 @@ Widgets.IconToolButton {
     signal requestLockUnlockAutoHide(bool lock)
 
     text: VLCIcons.ellipsis
+    figmaIcon: "more"
     description: qsTr("Menu")
 
     AccessibleCompat.id: "menuButton"

@@ -34,6 +34,10 @@ T.Control {
 
     property bool paintOnly: false
 
+    readonly property bool _showsPause: !paintOnly
+                                        && Player.playingState !== Player.PLAYING_STATE_PAUSED
+                                        && Player.playingState !== Player.PLAYING_STATE_STOPPED
+
     readonly property ColorContext colorContext: ColorContext {
         id: theme
 
@@ -74,30 +78,6 @@ T.Control {
     T.ToolTip.delay: VLCStyle.delayToolTipAppear
     T.ToolTip.text: root.Accessible.name
 
-    // States
-
-    states: [
-        State {
-            name: "hovered"
-            when: cursorInside
-
-            PropertyChanges {
-                target: hoverShadow
-                opacity: 1.0
-            }
-        }
-    ]
-
-    transitions: Transition {
-        from: ""; to: "*"
-        reversible: true
-        NumberAnimation {
-            properties: "opacity"
-            easing.type: Easing.InOutSine
-            duration: VLCStyle.duration_veryShort
-        }
-    }
-
     // Keys
 
     Keys.onPressed: (event) => {
@@ -105,7 +85,6 @@ T.Control {
             if (!event.isAutoRepeat) {
                 _keyOkPressed = true
                 keyHoldTimer.restart()
-                innerRectangle.state = "diminished"
             }
             event.accepted = true
         }
@@ -117,7 +96,6 @@ T.Control {
             if (!event.isAutoRepeat) {
                 _keyOkPressed = false
                 keyHoldTimer.stop()
-                innerRectangle.state = ""
                 if (Player.playingState !== Player.PLAYING_STATE_STOPPED)
                     MainPlaylistController.togglePlayPause()
             }
@@ -128,7 +106,6 @@ T.Control {
     // Functions
 
     function _pressAndHoldAction() {
-        innerRectangle.state = ""
         _keyOkPressed = false
         MainPlaylistController.stop()
     }
@@ -152,41 +129,10 @@ T.Control {
 
         hoverEnabled: true
 
-        readonly property bool cursorInside: {
-            if (!containsMouse)
-                return false
-
-            const center = (width / 2)
-            if (Helpers.pointInRadius( center - mouseX,
-                                       center - mouseY,
-                                       center )) {
-                return true
-            } else {
-                return false
-            }
-        }
-
-        onCursorInsideChanged: {
-            if (pressed && !cursorInside) {
-                // Press and hold action can no longer be done,
-                // so reset the state in order to reset the
-                // animation:
-                innerRectangle.state = ""
-            }
-        }
+        readonly property bool cursorInside: containsMouse
 
         onPressed: (mouse) => {
-            if (!cursorInside) {
-                mouse.accepted = false
-                return
-            }
-
             root.forceActiveFocus(Qt.MouseFocusReason)
-            innerRectangle.state = "diminished"
-        }
-
-        onReleased: {
-            innerRectangle.state = ""
         }
 
         onClicked: (mouse) => {
@@ -195,59 +141,38 @@ T.Control {
         }
 
         onPressAndHold: (mouse) => {
-            if (!cursorInside) {
-                mouse.accepted = false
-                return
-            }
-
             _pressAndHoldAction()
             mouse.accepted = true
         }
     }
 
-    contentItem: T.Label {
-        text: {
-            const state = Player.playingState
+    // Design: 54x28 rounded rectangle, orange while paused, grey while playing
 
-            if (!paintOnly
-                    && state !== Player.PLAYING_STATE_PAUSED
-                    && state !== Player.PLAYING_STATE_STOPPED)
-                return VLCIcons.pause_filled
-            else
-                return VLCIcons.play_filled
-        }
+    contentItem: Image {
+        readonly property real iconSize: VLCStyle.dp(24, VLCStyle.scale)
 
-        color: cursorInside ? theme.accent
-                            : "black"  //foreground is always black
+        fillMode: Image.PreserveAspectFit
+        smooth: true
 
-        font.pixelSize: Math.round(parent.height / 1.7)
+        sourceSize: Qt.size(iconSize * Screen.devicePixelRatio,
+                            iconSize * Screen.devicePixelRatio)
 
-        font.family: VLCIcons.fontFamily
-
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignHCenter
+        source: SVGColorImage.colorize("qrc:///figma/" + (root._showsPause ? "pause" : "play_filled") + ".svg")
+                    .any({ "#8F8F8F": "#161616" })
+                    .uri()
 
         Accessible.ignored: true
-
-        DelayedBehavior on color {
-            delayedEnabled: theme.initialized
-
-            ColorAnimation {
-                duration: VLCStyle.duration_veryShort
-                easing.type: Easing.InOutSine
-            }
-        }
     }
 
     background: Item {
-        implicitWidth: height
-        implicitHeight: VLCStyle.icon_medium
+        implicitWidth: VLCStyle.dp(54, VLCStyle.scale)
+        implicitHeight: VLCStyle.dp(28, VLCStyle.scale)
 
         Widgets.AnimatedBackground {
             anchors.fill: parent
             anchors.margins: -border.width * 4
 
-            radius: width / 2
+            radius: VLCStyle.dp(8, VLCStyle.scale)
             border.pixelAligned: false
 
             enabled: theme.initialized
@@ -258,67 +183,17 @@ T.Control {
         Rectangle {
             anchors.fill: parent
 
-            radius: width / 2
+            radius: VLCStyle.dp(6, VLCStyle.scale)
 
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: "#e25b01" }
-                GradientStop { position: 1.0; color: "#f89a06" }
+            color: {
+                const base = root._showsPause ? "#6B6B6B" : theme.accent
+                return root.cursorInside ? Qt.lighter(base, 1.12) : base
             }
 
-            Widgets.RoundedRectangleShadow {
-                id: hoverShadow
-
-                visible: opacity > 0
-                opacity: 0
-
-                blurRadius: VLCStyle.dp(9, VLCStyle.scale)
-                yOffset: VLCStyle.dp(4, VLCStyle.scale)
-
-                color: theme.accent.alpha(0.29)
-            }
-
-            Rectangle {
-                id: innerRectangle
-
-                color: "white"
-
-                anchors.fill: parent
-                anchors.margins: _diminished ? (parent.width / 2)
-                                             : VLCStyle.dp(2, VLCStyle.scale)
-
-                radius: width / 2
-
-                property bool _diminished: false
-
-                onStateChanged: {
-                    if (state === "diminished") {
-                        marginBehavior.enabled = true
-                        bindingTimer.start()
-                    } else {
-                        bindingTimer.stop()
-                        marginBehavior.enabled = false
-                        _diminished = false
-                    }
-                }
-
-                Timer {
-                    // Do not immediately start the animation.
-                    // Give some time if the intention is not
-                    // to hold the button.
-                    id: bindingTimer
-                    interval: mouseArea.pressAndHoldInterval / 3
-                    onTriggered: innerRectangle._diminished = true
-                }
-
-                Behavior on anchors.margins {
-                    id: marginBehavior
-                    NumberAnimation {
-                        // Press and hold action must be triggered
-                        // as soon as the inner rectangle diminishes.
-                        // Subtract the interval here so that we satisfy
-                        // that condition.
-                        duration: mouseArea.pressAndHoldInterval - bindingTimer.interval
-                    }
+            Behavior on color {
+                ColorAnimation {
+                    duration: VLCStyle.duration_veryShort
+                    easing.type: Easing.InOutSine
                 }
             }
         }

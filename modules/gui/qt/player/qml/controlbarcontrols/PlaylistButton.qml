@@ -28,6 +28,7 @@ Widgets.IconToolButton {
     id: playlistBtn
 
     text: VLCIcons.playlist
+    figmaIcon: "playlist"
     onClicked: {
         MainCtx.playqueuePanel.visible = !MainCtx.playqueuePanel.visible
         if (MainCtx.playqueuePanel.visible && MainCtx.playqueuePanel.docked) {

@@ -27,6 +27,7 @@ Widgets.IconToolButton {
     id: extdSettingsBtn
 
     text: VLCIcons.effect_filter
+    figmaIcon: "settings"
 
     description: qsTr("Extended settings")
 

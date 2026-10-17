@@ -29,6 +29,7 @@ Widgets.IconToolButton {
     enabled: Player.seekable
 
     text: VLCIcons.skip_for
+    figmaIcon: "forward_10"
     onClicked: Player.jumpFwd()
     description: qsTr("Step forward")
 

@@ -30,6 +30,7 @@ Widgets.IconToolButton {
 
     enabled: Player.isStarted
     text: VLCIcons.stop
+    figmaIcon: "stop"
     onClicked: MainPlaylistController.stop()
     description: qsTr("Stop")
 

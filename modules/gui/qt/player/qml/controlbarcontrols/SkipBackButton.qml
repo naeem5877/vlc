@@ -29,6 +29,7 @@ Widgets.IconToolButton {
     enabled: Player.seekable
 
     text: VLCIcons.skip_back
+    figmaIcon: "back_10"
     onClicked: Player.jumpBwd()
     description: qsTr("Step back")
 

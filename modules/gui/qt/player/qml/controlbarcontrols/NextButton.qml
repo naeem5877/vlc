@@ -27,6 +27,7 @@ Widgets.IconToolButton {
     id: nextBtn
 
     text: VLCIcons.next
+    figmaIcon: "next"
     enabled: MainPlaylistController.hasNext
     onClicked: MainPlaylistController.next()
     description: qsTr("Next")

@@ -28,6 +28,7 @@ Widgets.IconToolButton {
     id: quitBtn
 
     text: VLCIcons.clear
+    figmaIcon: "close"
     onClicked: MainCtx.close()
     description: qsTr("Quit")
 
