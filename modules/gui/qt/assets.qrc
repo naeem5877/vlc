@@ -76,6 +76,20 @@
         <file alias="volume_low.svg">pixmaps/figma/volume_low.svg</file>
         <file alias="volume_medium.svg">pixmaps/figma/volume_medium.svg</file>
         <file alias="volume_mute.svg">pixmaps/figma/volume_mute.svg</file>
+        <file alias="nav_add.svg">pixmaps/figma/nav_add.svg</file>
+        <file alias="nav_history.svg">pixmaps/figma/nav_history.svg</file>
+        <file alias="nav_home.svg">pixmaps/figma/nav_home.svg</file>
+        <file alias="nav_home_active.svg">pixmaps/figma/nav_home_active.svg</file>
+        <file alias="nav_music.svg">pixmaps/figma/nav_music.svg</file>
+        <file alias="nav_music_active.svg">pixmaps/figma/nav_music_active.svg</file>
+        <file alias="nav_music_current.svg">pixmaps/figma/nav_music_current.svg</file>
+        <file alias="nav_network.svg">pixmaps/figma/nav_network.svg</file>
+        <file alias="nav_network_active.svg">pixmaps/figma/nav_network_active.svg</file>
+        <file alias="nav_playlist.svg">pixmaps/figma/nav_playlist.svg</file>
+        <file alias="nav_playlist_active.svg">pixmaps/figma/nav_playlist_active.svg</file>
+        <file alias="nav_video.svg">pixmaps/figma/nav_video.svg</file>
+        <file alias="nav_video_active.svg">pixmaps/figma/nav_video_active.svg</file>
+        <file alias="nav_video_current.svg">pixmaps/figma/nav_video_current.svg</file>
     </qresource>
     <qresource prefix="/menu">
         <file alias="add.svg">pixmaps/menu/add.svg</file>

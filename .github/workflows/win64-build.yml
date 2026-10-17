@@ -1,0 +1,76 @@
+name: Build VLC (Windows x64)
+
+# Cross-compiles VLC for Windows from Linux using VideoLAN's own build image,
+# the same way VLC's GitLab CI does (extras/ci/gitlab-ci.yml, job "win64-llvm").
+# Prebuilt contribs (including Qt 6) are downloaded when available, so only
+# VLC itself is compiled.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ redesign-theme ]
+
+concurrency:
+  group: win64-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # keep in sync with VLC_WIN_LLVM_MSVCRT_IMAGE in extras/ci/gitlab-ci.yml
+  VLC_BUILD_IMAGE: registry.videolan.org/vlc-debian-llvm-msvcrt:20260611225331
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - name: Free disk space on the runner
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force || true
+          df -h /
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Pull build image
+        run: docker pull "$VLC_BUILD_IMAGE"
+
+      - name: Build
+        run: |
+          docker run --rm \
+            -v "$PWD":/vlc -w /vlc \
+            -e CI_JOB_GROUP_NAME=win64-llvm \
+            "$VLC_BUILD_IMAGE" bash -ex -c '
+              git config --global --add safe.directory /vlc || true
+              export HOST_ARCH=x86_64
+              export TRIPLET=x86_64-w64-mingw32
+              export VLC_CONTRIB_SHA="$(extras/ci/get-contrib-sha.sh ${CI_JOB_GROUP_NAME})"
+              export VLC_PREBUILT_CONTRIBS_URL="https://artifacts.videolan.org/vlc/${CI_JOB_GROUP_NAME}/vlc-contrib-${TRIPLET}-${VLC_CONTRIB_SHA}.tar.zst"
+              FLAGS=""
+              if extras/ci/check-url.sh "$VLC_PREBUILT_CONTRIBS_URL"; then
+                echo "Using prebuilt contribs: $VLC_PREBUILT_CONTRIBS_URL"
+                FLAGS="-p"
+              else
+                echo "No prebuilt contribs found: building them from source (slow)"
+                unset VLC_PREBUILT_CONTRIBS_URL
+              fi
+              # -r release, -i u = unsigned release archive (7z/zip)
+              extras/package/win32/build.sh -a x86_64 -r $FLAGS -i u
+            '
+
+      - name: List build output
+        if: always()
+        run: |
+          ls -la win64 2>/dev/null | head -50 || true
+          find win64 -maxdepth 2 \( -name '*.7z' -o -name '*.zip' -o -name '*.exe' \) 2>/dev/null | head -20 || true
+
+      - name: Upload VLC package
+        uses: actions/upload-artifact@v4
+        with:
+          name: vlc-redesign-win64
+          path: |
+            win64/vlc-*.7z
+            win64/vlc-*.zip
+          if-no-files-found: warn
+          retention-days: 14

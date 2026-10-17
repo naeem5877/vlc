@@ -563,7 +563,8 @@ FocusScope {
 
             width: VLCStyle.isScreenReallySmall ? 0.0 : collapsedWidth
 
-            property real collapsedWidth: VLCStyle.icon_normal + VLCStyle.margin_small + VLCStyle.margin_xsmall + VLCStyle.applicationHorizontalMargin
+            // Figma sidebar: 50dp wide icon rail
+            property real collapsedWidth: VLCStyle.dp(50, VLCStyle.scale) + VLCStyle.applicationHorizontalMargin
 
             delegateShowText: (state === "expanded")
 

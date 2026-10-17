@@ -37,6 +37,18 @@ T.ItemDelegate {
 
     property real radius: VLCStyle.button_radius
 
+    // Name of an SVG in qrc:///figma/ (without extension and without the
+    // "_active" / "_current" suffix). When set, it replaces the font glyph.
+    property string figmaIcon: ""
+
+    // Whether "<figmaIcon>_current.svg" exists (entries that have children)
+    property bool figmaHasCurrent: false
+
+    // Figma sidebar: accent colored when the entry is the selected page,
+    // filled when one of its children is the selected page.
+    readonly property string figmaSuffix: control.checked ? "_active"
+                                          : ((figmaHasCurrent && control.highlighted) ? "_current" : "")
+
     // Settings
 
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
@@ -111,7 +123,7 @@ T.ItemDelegate {
                 verticalCenter: parent.verticalCenter
             }
             implicitHeight: parent.height / 2
-            visible: control.checked
+            visible: control.checked && (control.figmaIcon === "")
 
             radius: control.radius / 2
         }
@@ -127,7 +139,7 @@ T.ItemDelegate {
             Widgets.IconLabel {
                 id: iconLabel
 
-                visible: text.length > 0
+                visible: (text.length > 0) && (control.figmaIcon === "")
 
                 anchors.centerIn: parent
 
@@ -139,6 +151,30 @@ T.ItemDelegate {
                 color: (control.highlighted || control.checked) ? theme.accent : theme.fg.primary
 
                 font.pixelSize: VLCStyle.icon_banner
+            }
+
+            Image {
+                id: figmaImage
+
+                anchors.centerIn: parent
+
+                visible: (control.figmaIcon !== "")
+
+                width: VLCStyle.icon_normal
+                height: VLCStyle.icon_normal
+
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+
+                sourceSize: Qt.size(width * Screen.devicePixelRatio,
+                                    height * Screen.devicePixelRatio)
+
+                source: (control.figmaIcon === "") ? ""
+                      : SVGColorImage.colorize("qrc:///figma/" + control.figmaIcon + control.figmaSuffix + ".svg")
+                            .any({
+                                "#8F8F8F": theme.fg.primary,
+                                "#D37918": theme.accent
+                            }).uri()
             }
         }
 

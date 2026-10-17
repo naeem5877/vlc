@@ -42,6 +42,31 @@ T.Pane {
 
     property bool delegateShowText: true
 
+    // Figma sidebar: the collapsed state is a 50dp icon rail with 46dp tall
+    // entries and a 32x32 rounded hover tile. The expanded (text) state keeps
+    // the stock metrics.
+    readonly property real delegateHeight: delegateShowText ? VLCStyle.buttonHeightNavigationPane
+                                                            : VLCStyle.dp(46, VLCStyle.scale)
+    readonly property real delegateLeftPadding: delegateShowText ? VLCStyle.margin_xsmall
+                                                                 : VLCStyle.dp(11, VLCStyle.scale)
+    readonly property real delegateHorizontalInset: delegateShowText ? VLCStyle.margin_xxsmall
+                                                                     : VLCStyle.dp(9, VLCStyle.scale)
+    readonly property real delegateVerticalInset: delegateShowText ? VLCStyle.margin_xxxsmall
+                                                                   : VLCStyle.dp(7, VLCStyle.scale)
+    readonly property real delegateRadius: delegateShowText ? VLCStyle.button_radius
+                                                            : VLCStyle.margin_xxxsmall
+
+    // top level navigation uri -> SVG in qrc:///figma/
+    readonly property var figmaIcons: ({
+        "home": "nav_home",
+        "video": "nav_video",
+        "music": "nav_music",
+        "network": "nav_network"
+    })
+
+    // entries that have a "_current" variant (they have children)
+    readonly property var figmaIconsWithCurrent: ["video", "music"]
+
     property alias model: navigationModel
 
     readonly property int minimumWidth: VLCStyle.expandNavigationPaneWidth + safeAreaLeftMargin + safeAreaRightMargin
@@ -163,13 +188,23 @@ T.Pane {
                     width: ListView.view.contentWidth
                     height: preferredHeight
 
-                    property real preferredHeight: shouldShow ? VLCStyle.buttonHeightNavigationPane : 0.0
+                    property real preferredHeight: shouldShow ? root.delegateHeight : 0.0
 
-                    leftPadding: root.safeAreaLeftMargin + VLCStyle.margin_xsmall
+                    leftPadding: root.safeAreaLeftMargin + root.delegateLeftPadding
                     rightPadding: root.safeAreaRightMargin
+
+                    implicitLeftInset: root.delegateHorizontalInset
+                    implicitRightInset: root.delegateHorizontalInset
+                    implicitTopInset: root.delegateVerticalInset
+                    implicitBottomInset: root.delegateVerticalInset
 
                     leftInset: root.safeAreaLeftMargin + implicitLeftInset
                     rightInset: root.safeAreaRightMargin + implicitRightInset
+
+                    radius: root.delegateRadius
+
+                    figmaIcon: (depth === 0 && uri && uri.length > 0) ? (root.figmaIcons[uri[0]] ?? "") : ""
+                    figmaHasCurrent: (figmaIcon !== "") && (root.figmaIconsWithCurrent.indexOf(uri[0]) >= 0)
 
                     iconTxt: icon_alias
                     text: title
@@ -265,13 +300,22 @@ T.Pane {
                 AccessibleCompat.id: "preferencesButton"
 
                 Layout.fillWidth: true
-                Layout.preferredHeight: VLCStyle.buttonHeightNavigationPane
+                Layout.preferredHeight: root.delegateHeight
 
-                leftPadding: root.safeAreaLeftMargin + VLCStyle.margin_xsmall
+                leftPadding: root.safeAreaLeftMargin + root.delegateLeftPadding
                 rightPadding: root.safeAreaRightMargin
+
+                implicitLeftInset: root.delegateHorizontalInset
+                implicitRightInset: root.delegateHorizontalInset
+                implicitTopInset: root.delegateVerticalInset
+                implicitBottomInset: root.delegateVerticalInset
 
                 leftInset: root.safeAreaLeftMargin + implicitLeftInset
                 rightInset: root.safeAreaRightMargin + implicitRightInset
+
+                radius: root.delegateRadius
+
+                figmaIcon: "settings"
 
                 iconTxt: VLCIcons.settings
                 text: qsTr("Preferences")
