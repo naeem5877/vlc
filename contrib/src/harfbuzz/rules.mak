@@ -25,7 +25,8 @@ HARFBUZZ_CONF := -Dfreetype=enabled \
 	-Dgobject=disabled \
 	-Ddocs=disabled \
 	-Dtests=disabled \
-	-Dgpu_demo=disabled
+	-Dgpu_demo=disabled \
+	-Dicu=disabled
 
 ifdef HAVE_DARWIN_OS
 HARFBUZZ_CONF += -Dcoretext=enabled
