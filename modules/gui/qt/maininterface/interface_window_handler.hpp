@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QWindow>
 #include <QPointer>
+#include <QTimer>
 #include "util/vlchotkeyconverter.hpp"
 
 class MainCtx;
@@ -65,6 +66,16 @@ signals:
 
 private:
     bool applyKeyEvent(QKeyEvent * event) const;
+
+    // Hold Space to play at 2x speed, tap Space to play/pause
+    void startSpeedBoost();
+    void endSpeedBoost();
+    void cancelSpaceHold();
+
+    QTimer m_spaceHoldTimer;
+    bool m_spaceHeld = false;
+    bool m_spaceBoosted = false;
+    float m_rateBeforeBoost = 1.0f;
 
 protected:
     virtual void updateCSDWindowSettings();

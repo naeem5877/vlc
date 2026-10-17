@@ -31,6 +31,11 @@
 namespace
 {
 
+// Hold Space for this long before the 2x speed boost kicks in
+constexpr int kSpaceHoldDelayMs = 250;
+// Playback rate while Space is held
+constexpr float kSpeedBoostRate = 2.0f;
+
 void setWindowState(QWindow *window, Qt::WindowState state)
 {
     // make sure to preserve original state, Qt saves this info
@@ -65,6 +70,10 @@ InterfaceWindowHandler::InterfaceWindowHandler(qt_intf_t *_p_intf, MainCtx* main
 
     /* */
     m_pauseOnMinimize = var_InheritBool( p_intf, "qt-pause-minimized" );
+
+    m_spaceHoldTimer.setSingleShot( true );
+    m_spaceHoldTimer.setInterval( kSpaceHoldDelayMs );
+    connect( &m_spaceHoldTimer, &QTimer::timeout, this, &InterfaceWindowHandler::startSpeedBoost );
 
     m_window->setIcon( QApplication::windowIcon() );
     m_window->setOpacity( var_InheritFloat( p_intf, "qt-opacity" ) );
@@ -243,6 +252,12 @@ bool InterfaceWindowHandler::eventFilter(QObject*, QEvent* event)
         }
         break;
     }
+    case QEvent::WindowDeactivate:
+    {
+        // The key release would never reach us: do not stay stuck at 2x
+        cancelSpaceHold();
+        return false;
+    }
     case QEvent::KeyPress:
     {
         QKeyEvent * keyEvent = static_cast<QKeyEvent *> (event);
@@ -262,13 +277,41 @@ bool InterfaceWindowHandler::eventFilter(QObject*, QEvent* event)
         if (applyKeyEvent(keyEvent) == false)
             return false;
 
+        if (keyEvent->key() == Qt::Key_Space && keyEvent->modifiers() == Qt::NoModifier)
+        {
+            // Tap: play/pause (sent on release). Hold: 2x speed while held.
+            // Auto-repeated presses are swallowed.
+            if (!keyEvent->isAutoRepeat() && !m_spaceHeld)
+            {
+                m_spaceHeld = true;
+                m_spaceHoldTimer.start();
+            }
+            return true;
+        }
+
         m_mainCtx->sendHotkey(static_cast<Qt::Key> (keyEvent->key()), keyEvent->modifiers());
 
         return true;
     }
     case QEvent::KeyRelease:
     {
-        return applyKeyEvent(static_cast<QKeyEvent *> (event));
+        QKeyEvent * keyEvent = static_cast<QKeyEvent *> (event);
+
+        if (keyEvent->key() == Qt::Key_Space && m_spaceHeld)
+        {
+            if (keyEvent->isAutoRepeat())
+                return true; // synthetic release of a key that is still down
+
+            const bool boosted = m_spaceBoosted;
+            cancelSpaceHold(); // stops the timer and restores the rate
+
+            if (!boosted)
+                m_mainCtx->sendHotkey(Qt::Key_Space, Qt::NoModifier); // it was a tap
+
+            return true;
+        }
+
+        return applyKeyEvent(keyEvent);
     }
     case QEvent::Wheel:
     {
@@ -501,6 +544,36 @@ void InterfaceWindowHandler::setInterfaceAlwaysOnTop( bool on_top )
 }
 
 // Functions private
+
+void InterfaceWindowHandler::startSpeedBoost()
+{
+    if (!m_spaceHeld)
+        return;
+
+    // Nothing to speed up when paused/stopped: releasing then acts as a tap
+    if (THEMIM->getPlayingState() != PlayerController::PLAYING_STATE_PLAYING)
+        return;
+
+    m_rateBeforeBoost = THEMIM->getRate();
+    THEMIM->setRate(kSpeedBoostRate);
+    m_spaceBoosted = true;
+}
+
+void InterfaceWindowHandler::endSpeedBoost()
+{
+    if (!m_spaceBoosted)
+        return;
+
+    m_spaceBoosted = false;
+    THEMIM->setRate(m_rateBeforeBoost);
+}
+
+void InterfaceWindowHandler::cancelSpaceHold()
+{
+    m_spaceHoldTimer.stop();
+    endSpeedBoost();
+    m_spaceHeld = false;
+}
 
 bool InterfaceWindowHandler::applyKeyEvent(QKeyEvent * event) const
 {
