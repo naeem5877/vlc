@@ -38,7 +38,7 @@ jobs:
 
       - name: Build
         run: |
-          docker run --rm \
+          docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
             -v "$PWD":/vlc -w /vlc \
             -e CI_JOB_GROUP_NAME=win64-llvm \
             "$VLC_BUILD_IMAGE" bash -ex -c '
