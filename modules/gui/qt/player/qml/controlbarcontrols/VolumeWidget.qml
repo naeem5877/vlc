@@ -74,6 +74,16 @@ T.Pane {
                 else
                     return VLCIcons.volume_high
             }
+            figmaIcon: {
+                if (_player.muted || _player.volume === 0)
+                    return "volume_mute"
+                else if (_player.volume < .33)
+                    return "volume_low"
+                else if (_player.volume <= .66)
+                    return "volume_medium"
+                else
+                    return "volume_high"
+            }
             description: qsTr("Mute")
 
             AccessibleCompat.id: "muteButton"
@@ -98,7 +108,7 @@ T.Pane {
             id: volControl
 
             // FIXME: use VLCStyle
-            implicitWidth: VLCStyle.dp(100, VLCStyle.scale)
+            implicitWidth: VLCStyle.dp(90, VLCStyle.scale)
 
             // WARNING: Directly setting the insets break handle and background positioning.
             Binding on topInset {
@@ -126,6 +136,70 @@ T.Pane {
             property bool filterEvents: false
 
             color: root.sliderColor
+
+            // Figma design: a wedge that grows to the right, filled with a
+            // green -> orange -> red gradient up to the current volume.
+            function _gradientColor(t) {
+                const stops = [
+                    { p: 0.0,      c: [0x95, 0xD3, 0x18] },
+                    { p: 0.578809, c: [0xB2, 0xA9, 0x18] },
+                    { p: 0.792379, c: [0xD3, 0x79, 0x18] },
+                    { p: 1.0,      c: [0xFF, 0x37, 0x37] }
+                ]
+                for (let i = 1; i < stops.length; ++i) {
+                    if (t <= stops[i].p) {
+                        const a = stops[i - 1], b = stops[i]
+                        const k = (t - a.p) / (b.p - a.p)
+                        return Qt.rgba((a.c[0] + (b.c[0] - a.c[0]) * k) / 255,
+                                       (a.c[1] + (b.c[1] - a.c[1]) * k) / 255,
+                                       (a.c[2] + (b.c[2] - a.c[2]) * k) / 255, 1)
+                    }
+                }
+                return Qt.rgba(1.0, 0.216, 0.216, 1)
+            }
+
+            handle: Item {
+                x: volControl.leftPadding + volControl.visualPosition * (volControl.availableWidth - width)
+                y: volControl.topPadding + (volControl.availableHeight - height) / 2
+                width: 0
+                height: 0
+            }
+
+            background: Item {
+                id: wedge
+
+                readonly property int columns: 45
+                readonly property real columnWidth: width / columns
+
+                x: volControl.leftPadding
+                y: volControl.topPadding + (volControl.availableHeight - height) / 2
+
+                implicitWidth: VLCStyle.dp(90, VLCStyle.scale)
+                implicitHeight: VLCStyle.dp(24, VLCStyle.scale)
+
+                width: volControl.availableWidth
+                height: implicitHeight
+
+                Repeater {
+                    model: wedge.columns
+
+                    Rectangle {
+                        required property int index
+
+                        readonly property real t: (index + 0.5) / wedge.columns
+
+                        x: index * wedge.columnWidth
+                        width: wedge.columnWidth + 0.5
+                        height: Math.max(2, wedge.height * (0.18 + 0.82 * t))
+                        y: (wedge.height - height) / 2
+
+                        radius: Math.min(width / 2, VLCStyle.dp(1, VLCStyle.scale))
+
+                        color: (t <= volControl.position) ? volControl._gradientColor(t)
+                                                          : volControl.bgColor
+                    }
+                }
+            }
 
             from: 0
             to: root._maxvolpos
