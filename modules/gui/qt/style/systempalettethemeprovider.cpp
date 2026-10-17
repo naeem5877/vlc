@@ -145,8 +145,8 @@ static int updatePalette(vlc_qt_theme_provider_t* obj)
 
         if (!strcmp(accentColor, "default"))
         {
-            accent = QColor( sys->m_isDark ? "#FF8800" : "#FF610A" );
-            accentPressed = QColor( sys->m_isDark ? "#e67a30" : "#e65609" );
+            accent = QColor( sys->m_isDark ? "#D37918" : "#FF610A" );
+            accentPressed = QColor( sys->m_isDark ? "#B8680F" : "#e65609" );
         }
 #if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
         else if (!strcmp(accentColor, "system"))
@@ -184,7 +184,7 @@ static int updatePalette(vlc_qt_theme_provider_t* obj)
     QColor neutral(sys->m_isDark ? QColor(Qt::darkYellow) : "#e4dab8");
     QColor neutralHover = neutral.lighter(110);
     QColor neutralPressed = neutral.lighter(150);
-    QColor textOnNeutral(sys->m_isDark ? "#FF8800" : "#FF610A");
+    QColor textOnNeutral(sys->m_isDark ? "#D37918" : "#FF610A");
 
     QColor positive(sys->m_isDark ? QColor(Qt::darkGreen) : "#dff6dd");
     QColor positiveHover = positive.lighter(110);
