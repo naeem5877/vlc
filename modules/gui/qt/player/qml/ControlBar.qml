@@ -42,12 +42,18 @@ T.Pane {
     implicitHeight: Math.max(implicitBackgroundHeight + bottomInset,
                              implicitContentHeight + topPadding + bottomPadding)
 
-    topInset: sliderY
+    topInset: inlineSeekBar ? 0 : sliderY
 
     bottomPadding: VLCStyle.margin_xsmall
 
     readonly property real sliderY: mapFromItem(contentItem, 0, contentItem.sliderY).y
     property int textPosition: ControlBar.TimeTextPosition.LeftRightSlider
+
+    // When true, the time labels and the seek bar are placed on the same row as
+    // the buttons (between the left and the right controls), as in the Figma design.
+    // It requires a left/right control layout, otherwise the stacked layout is used.
+    property bool singleRow: false
+    readonly property bool inlineSeekBar: singleRow && playerControlLayout.leftRightMode
     property int identifier: -1
     property real sliderHeight: VLCStyle.dp(28, VLCStyle.scale)
     property real bookmarksHeight: VLCStyle.controlBarBookmarksHeight
@@ -114,6 +120,18 @@ T.Pane {
 
     background: Rectangle {
         color: theme.bg.primary
+    }
+
+    // Time labels and seek bar, inserted between the left and right controls
+    // when `singleRow` is used.
+    Component {
+        id: seekRowComponent
+
+        RowLayout {
+            spacing: VLCStyle.margin_xsmall
+
+            children: root.inlineSeekBar ? [mediaTime, trackPositionSlider, mediaRemainingTime] : []
+        }
     }
 
     contentItem: ColumnLayout {
@@ -241,7 +259,7 @@ T.Pane {
                 id: bookmarksLoader
 
                 parent: root
-                active: MainCtx.mediaLibraryAvailable
+                active: MainCtx.mediaLibraryAvailable && !root.inlineSeekBar
                 source: "qrc:///qt/qml/VLC/MediaLibrary/Bookmarks.qml"
 
                 x: root.leftPadding + trackPositionSlider.x + row2.Layout.leftMargin
@@ -273,6 +291,9 @@ T.Pane {
             visible: children.length > 0
 
             children: {
+                if (root.inlineSeekBar)
+                    return []
+
                 switch (textPosition) {
                 case ControlBar.TimeTextPosition.AboveSlider:
                     return [mediaTime, mediaRemainingTime]
@@ -288,6 +309,9 @@ T.Pane {
             id: row2
 
             children: {
+                if (root.inlineSeekBar)
+                    return []
+
                 switch (textPosition) {
                 case ControlBar.TimeTextPosition.Hide:
                 case ControlBar.TimeTextPosition.AboveSlider:
@@ -320,6 +344,8 @@ T.Pane {
             Layout.rightMargin: VLCStyle.margin_large
 
             identifier: root.identifier
+
+            middleComponent: root.singleRow ? seekRowComponent : null
 
             implicitHeight: MainCtx.pinVideoControls ? VLCStyle.controlLayoutHeightPinned
                                                      : VLCStyle.controlLayoutHeight

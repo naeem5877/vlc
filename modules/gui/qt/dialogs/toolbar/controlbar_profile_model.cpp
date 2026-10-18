@@ -102,21 +102,19 @@ decltype (ControlbarProfileModel::m_defaults)
                         {
                             {
                                 {
-                                    ControlListModel::LANG_BUTTON,
-                                    ControlListModel::BOOKMARK_BUTTON,
-                                    ControlListModel::EXTENDED_BUTTON,
-                                    ControlListModel::NAVIGATION_BUTTONS
-                                },
-                                {
-                                    ControlListModel::SKIP_BACK_BUTTON,
                                     ControlListModel::PREVIOUS_BUTTON,
                                     ControlListModel::PLAY_BUTTON,
-                                    ControlListModel::NEXT_BUTTON,
-                                    ControlListModel::SKIP_FW_BUTTON
+                                    ControlListModel::NEXT_BUTTON
+                                },
+                                {
+                                    // center is left empty: the time and the seek
+                                    // bar are shown between the left and right controls
                                 },
                                 {
                                     ControlListModel::VOLUME,
-                                    ControlListModel::RENDERER_BUTTON,
+                                    ControlListModel::LANG_BUTTON,
+                                    ControlListModel::EXTENDED_BUTTON,
+                                    ControlListModel::PLAYLIST_BUTTON,
                                     ControlListModel::FULLSCREEN_BUTTON
                                 }
                             }
@@ -127,21 +125,19 @@ decltype (ControlbarProfileModel::m_defaults)
                         {
                             {
                                 {
-                                    ControlListModel::LANG_BUTTON,
-                                    ControlListModel::BOOKMARK_BUTTON,
-                                    ControlListModel::EXTENDED_BUTTON
+                                    ControlListModel::PREVIOUS_BUTTON,
+                                    ControlListModel::SKIP_BACK_BUTTON,
+                                    ControlListModel::PLAY_BUTTON,
+                                    ControlListModel::SKIP_FW_BUTTON,
+                                    ControlListModel::NEXT_BUTTON
                                 },
                                 {
-                                    ControlListModel::RANDOM_BUTTON,
-                                    ControlListModel::PREVIOUS_BUTTON,
-                                    ControlListModel::PLAY_BUTTON,
-                                    ControlListModel::NEXT_BUTTON,
-                                    ControlListModel::LOOP_BUTTON
+                                    // center is left empty (see video player)
                                 },
                                 {
                                     ControlListModel::VOLUME,
-                                    ControlListModel::RENDERER_BUTTON,
-                                    ControlListModel::FULLSCREEN_BUTTON
+                                    ControlListModel::EXTENDED_BUTTON,
+                                    ControlListModel::PLAYLIST_BUTTON
                                 }
                             }
                         }
@@ -695,7 +691,9 @@ ControlbarProfile* ControlbarProfileModel::currentModel() const
 
 void ControlbarProfileModel::save(bool clearDirty) const
 {
-    const auto groupName = metaObject()->className();
+    // The group name is versioned so that the default (Figma) toolbar layout is
+    // used instead of layouts saved by previous versions.
+    const QString groupName = QString::fromLatin1(metaObject()->className()) + QLatin1String("_Figma");
 
     m_settings->beginGroup(groupName);
     m_settings->remove(""); // clear the group before save
@@ -751,7 +749,9 @@ void ControlbarProfileModel::save(bool clearDirty) const
 
 bool ControlbarProfileModel::reload()
 {
-    const auto groupName = metaObject()->className();
+    // The group name is versioned so that the default (Figma) toolbar layout is
+    // used instead of layouts saved by previous versions.
+    const QString groupName = QString::fromLatin1(metaObject()->className()) + QLatin1String("_Figma");
 
     m_settings->beginGroup(groupName);
 

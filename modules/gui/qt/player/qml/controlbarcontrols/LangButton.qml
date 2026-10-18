@@ -44,6 +44,7 @@ Widgets.IconToolButton {
     // Settings
 
     text: VLCIcons.audiosub
+    figmaIcon: "subtitles"
 
     enabled: menuLoader.status === Loader.Ready
 

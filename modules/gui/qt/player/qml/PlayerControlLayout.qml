@@ -36,6 +36,13 @@ FocusScope {
 
     property int identifier: -1
 
+    // Optional content placed between the left and the right controls
+    // (used by the player to put the time and the seek bar on a single row).
+    // Only shown when there is no center layout.
+    property Component middleComponent: null
+
+    readonly property bool leftRightMode: loaderLeftRight.active
+
     readonly property PlayerControlbarModel model: {
         if (!!MainCtx.controlbarProfileModel.currentModel)
             return MainCtx.controlbarProfileModel.currentModel.getModel(identifier)
@@ -129,11 +136,20 @@ FocusScope {
                     return false
                 }
 
-                Layout.minimumWidth: (containsVisibleItem(leftRepeater) && containsVisibleItem(rightRepeater)) ? playerControlLayout.layoutSpacing
-                                                                                                               : 0
+                Layout.minimumWidth: playerControlLayout.middleComponent ? 0
+                                                                         : ((containsVisibleItem(leftRepeater) && containsVisibleItem(rightRepeater)) ? playerControlLayout.layoutSpacing
+                                                                                                                                                  : 0)
 
                 Layout.fillWidth: true
+                Layout.fillHeight: !!playerControlLayout.middleComponent
                 visible: true
+
+                Loader {
+                    anchors.fill: parent
+
+                    active: !!playerControlLayout.middleComponent
+                    sourceComponent: playerControlLayout.middleComponent
+                }
             }
 
             ControlRepeater {
