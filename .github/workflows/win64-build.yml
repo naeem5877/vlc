@@ -66,11 +66,13 @@ jobs:
           find win64 -maxdepth 2 \( -name '*.7z' -o -name '*.zip' -o -name '*.exe' \) 2>/dev/null | head -20 || true
 
       - name: Upload VLC package
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: vlc-redesign-win64
           path: |
             win64/vlc-*.7z
             win64/vlc-*.zip
+            win64/vlc-*.exe
           if-no-files-found: warn
           retention-days: 14
