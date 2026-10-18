@@ -138,22 +138,28 @@ T.ToolButton {
     Component {
         id: figmaIconComponent
 
-        Image {
+        // Image.implicitWidth/implicitHeight are read-only, so the size is
+        // carried by a wrapper Item
+        Item {
             implicitWidth: control.figmaIconSize
             implicitHeight: control.figmaIconSize
 
-            fillMode: Image.PreserveAspectFit
-            smooth: true
+            Image {
+                anchors.fill: parent
 
-            sourceSize: Qt.size(width * Screen.devicePixelRatio,
-                                height * Screen.devicePixelRatio)
+                fillMode: Image.PreserveAspectFit
+                smooth: true
 
-            source: SVGColorImage.colorize("qrc:///figma/" + control.figmaIcon + ".svg")
-                        .any({
-                            "#8F8F8F": control.color,
-                            "#D37918": theme.accent,
-                            "#AB6314": Qt.alpha(theme.accent, 0.7)
-                        }).uri()
+                sourceSize: Qt.size(width * Screen.devicePixelRatio,
+                                    height * Screen.devicePixelRatio)
+
+                source: SVGColorImage.colorize("qrc:///figma/" + control.figmaIcon + ".svg")
+                            .any({
+                                "#8F8F8F": control.color,
+                                "#D37918": theme.accent,
+                                "#AB6314": Qt.alpha(theme.accent, 0.7)
+                            }).uri()
+            }
         }
     }
 }
