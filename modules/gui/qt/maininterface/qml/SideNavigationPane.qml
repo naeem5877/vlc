@@ -113,9 +113,9 @@ T.Pane {
         }
     }
 
-    background: Widgets.AcrylicBackground {
-        enabled: root.useAcrylic
-        tintColor: theme.bg.primary
+    // Figma sidebar: solid rail (#191919 in the dark theme), clearly darker than the page
+    background: Rectangle {
+        color: theme.bg.primary
     }
 
     contentItem:  Item {
