@@ -21,6 +21,7 @@
 #include "medialibrary/mlplaylistlistmodel.hpp"
 #include "medialibrary/mlplaylistmodel.hpp"
 #include "medialibrary/mlbookmarkmodel.hpp"
+#include "medialibrary/mlrecentmediamodel.hpp"
 #include "network/networkdevicemodel.hpp"
 #include "network/networkmediamodel.hpp"
 #include "player/player_controller.hpp"
@@ -286,30 +287,82 @@ void QmlGlobalMenu::popup(QPoint pos)
         aboutToHide();
     });
 
-    submenu = m_menu->addMenu(qtr( "&Media" ));
+    QAction* action;
+
+    // Figma menu: flat list with accent icons, classic menus live under "More"
+    action = m_menu->addAction(QIcon(":/figma/m_open_file.svg"), qtr("Open File(s)"), THEDP, []() { THEDP->simpleOpenDialog(); });
+    action->setShortcut(QKeySequence("Ctrl+O"));
+    action = m_menu->addAction(QIcon(":/figma/m_open_folder.svg"), qtr("Open Folder"), THEDP, &DialogsProvider::PLOpenDir);
+    action->setShortcut(QKeySequence("Ctrl+F"));
+    action = m_menu->addAction(QIcon(":/figma/m_network.svg"), qtr("Open Network Stream"), THEDP, &DialogsProvider::openNetDialog);
+    action->setShortcut(QKeySequence("Ctrl+N"));
+    action = m_menu->addAction(QIcon(":/figma/m_disc.svg"), qtr("Open Disc"), THEDP, &DialogsProvider::openDiscDialog);
+    action->setShortcut(QKeySequence("Ctrl+D"));
+    action = m_menu->addAction(QIcon(":/figma/m_capture.svg"), qtr("Open Capture Device"), THEDP, &DialogsProvider::openCaptureDialog);
+    action->setShortcut(QKeySequence("Ctrl+C"));
+    action = m_menu->addAction(QIcon(":/figma/m_convert.svg"), qtr("Convert"), THEDP, &DialogsProvider::openAndTranscodingDialogs);
+    action->setShortcut(QKeySequence("Ctrl+R"));
+
+    auto mi = p_intf->p_mi;
+    if (mi && var_InheritBool(p_intf, "save-recentplay") && mi->hasMediaLibrary())
+    {
+        MLRecentMediaModel* recentModel = new MLRecentMediaModel(nullptr);
+        recentModel->setMl(mi->getMediaLibrary());
+        recentModel->setLimit(10);
+        QMenu* recentsMenu = new RecentMenu(recentModel, mi->getMediaLibrary(), m_menu.get());
+        recentsMenu->setTitle(qtr("Open Recent"));
+        recentsMenu->setIcon(QIcon(":/figma/m_recent.svg"));
+        recentModel->setParent(recentsMenu);
+        m_menu->addMenu(recentsMenu);
+    }
+
+    m_menu->addSeparator();
+
+    m_menu->addAction(QIcon(":/figma/m_customize.svg"), qtr("Customize Player"), THEDP, &DialogsProvider::showToolbarEditorDialog);
+    action = m_menu->addAction(QIcon(":/figma/m_settings.svg"), qtr("Settings"), THEDP, &DialogsProvider::prefsDialog);
+    action->setShortcut(QKeySequence("Ctrl+P"));
+    action = m_menu->addAction(QIcon(":/figma/m_about.svg"), qtr("About VLC"), THEDP, &DialogsProvider::aboutDialog);
+    action->setShortcut(QKeySequence("Shift+F1"));
+
+    m_menu->addSeparator();
+
+    // The classic VLC menus stay reachable so no feature is lost
+    QMenu* more = new VLCMenu(qtr("More"), m_menu.get());
+    more->setIcon(QIcon(":/figma/more.svg"));
+    m_menu->addMenu(more);
+
+    submenu = new VLCMenu(qtr( "&Media" ), more);
+    more->addMenu(submenu);
     FileMenu( p_intf, submenu );
 
     /* Dynamic menus, rebuilt before being showed */
-    submenu = m_menu->addMenu(qtr( "P&layback" ));
+    submenu = new VLCMenu(qtr( "P&layback" ), more);
+    more->addMenu(submenu);
     NavigMenu( p_intf, submenu );
 
-    submenu = m_menu->addMenu(qtr( "&Audio" ));
+    submenu = new VLCMenu(qtr( "&Audio" ), more);
+    more->addMenu(submenu);
     AudioMenu( p_intf, submenu );
 
-    submenu = m_menu->addMenu(qtr( "&Video" ));
+    submenu = new VLCMenu(qtr( "&Video" ), more);
+    more->addMenu(submenu);
     VideoMenu( p_intf, submenu );
 
-    submenu = m_menu->addMenu(qtr( "Subti&tle" ));
+    submenu = new VLCMenu(qtr( "Subti&tle" ), more);
+    more->addMenu(submenu);
     SubtitleMenu( p_intf, submenu );
 
-    submenu = m_menu->addMenu(qtr( "Tool&s" ));
+    submenu = new VLCMenu(qtr( "Tool&s" ), more);
+    more->addMenu(submenu);
     ToolsMenu( p_intf, submenu );
 
     /* View menu, a bit different */
-    submenu = m_menu->addMenu(qtr( "V&iew" ));
+    submenu = new VLCMenu(qtr( "V&iew" ), more);
+    more->addMenu(submenu);
     ViewMenu( p_intf, submenu );
 
-    submenu = m_menu->addMenu(qtr( "&Help" ));
+    submenu = new VLCMenu(qtr( "&Help" ), more);
+    more->addMenu(submenu);
     HelpMenu( p_intf, submenu );
 
     m_menu->popup(pos);

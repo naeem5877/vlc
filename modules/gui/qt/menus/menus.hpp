@@ -46,6 +46,8 @@ QMenu::icon { padding-left: 10px; }
 QMenu::indicator { left: 10px; width: 16px; height: 16px; }
 QMenu::separator { height: 1px; background: #222222; margin: 6px 16px; }
 QMenu::right-arrow { image: url(:/figma/chevron_right.svg); width: 16px; height: 16px; margin-right: 10px; }
+QMenu::indicator:checked { image: url(:/figma/m_check.svg); }
+QMenu::indicator:unchecked { image: none; }
 )QSS";
 
     void applyFigmaStyle()
@@ -74,6 +76,7 @@ QMenu::right-arrow { image: url(:/figma/chevron_right.svg); width: 16px; height:
     explicit VLCMenu(const QString &title, QWidget *parent) : QMenu(title, parent)
     {
         assert(parent); // use VLCMenu(qt_intf_t* p_intf) if parent is null pointer
+        applyFigmaStyle();
     }
 };
 

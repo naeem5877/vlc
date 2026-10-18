@@ -92,6 +92,20 @@
         <file alias="nav_video_current.svg">pixmaps/figma/nav_video_current.svg</file>
         <file alias="toggle_off.svg">pixmaps/figma/toggle_off.svg</file>
         <file alias="toggle_on.svg">pixmaps/figma/toggle_on.svg</file>
+        <file alias="m_open_file.svg">pixmaps/figma/m_open_file.svg</file>
+        <file alias="m_open_folder.svg">pixmaps/figma/m_open_folder.svg</file>
+        <file alias="m_network.svg">pixmaps/figma/m_network.svg</file>
+        <file alias="m_disc.svg">pixmaps/figma/m_disc.svg</file>
+        <file alias="m_capture.svg">pixmaps/figma/m_capture.svg</file>
+        <file alias="m_convert.svg">pixmaps/figma/m_convert.svg</file>
+        <file alias="m_recent.svg">pixmaps/figma/m_recent.svg</file>
+        <file alias="m_profile.svg">pixmaps/figma/m_profile.svg</file>
+        <file alias="m_keyboard.svg">pixmaps/figma/m_keyboard.svg</file>
+        <file alias="m_customize.svg">pixmaps/figma/m_customize.svg</file>
+        <file alias="m_settings.svg">pixmaps/figma/m_settings.svg</file>
+        <file alias="m_about.svg">pixmaps/figma/m_about.svg</file>
+        <file alias="m_plus.svg">pixmaps/figma/m_plus.svg</file>
+        <file alias="m_check.svg">pixmaps/figma/m_check.svg</file>
     </qresource>
     <qresource prefix="/menu">
         <file alias="add.svg">pixmaps/menu/add.svg</file>
