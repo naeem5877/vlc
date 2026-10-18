@@ -103,7 +103,10 @@ void StringListMenu::popup(const QPoint &point, const QVariantList &stringList)
         if (!icon.isEmpty())
         {
             assert(action);
-            action->setIcon(ColorizedSvgIcon::colorizedIconForWidget(icon, m));
+            if (icon.startsWith(QStringLiteral(":/figma/")))
+                action->setIcon(QIcon(icon)); // Figma icons carry their own colors
+            else
+                action->setIcon(ColorizedSvgIcon::colorizedIconForWidget(icon, m));
         }
     }
 

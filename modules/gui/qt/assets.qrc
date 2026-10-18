@@ -106,6 +106,14 @@
         <file alias="m_about.svg">pixmaps/figma/m_about.svg</file>
         <file alias="m_plus.svg">pixmaps/figma/m_plus.svg</file>
         <file alias="m_check.svg">pixmaps/figma/m_check.svg</file>
+        <file alias="m_play.svg">pixmaps/figma/m_play.svg</file>
+        <file alias="m_audio.svg">pixmaps/figma/m_audio.svg</file>
+        <file alias="m_queue.svg">pixmaps/figma/m_queue.svg</file>
+        <file alias="m_favorite.svg">pixmaps/figma/m_favorite.svg</file>
+        <file alias="m_playlist_add.svg">pixmaps/figma/m_playlist_add.svg</file>
+        <file alias="m_seen.svg">pixmaps/figma/m_seen.svg</file>
+        <file alias="m_subtitles.svg">pixmaps/figma/m_subtitles.svg</file>
+        <file alias="m_shuffle.svg">pixmaps/figma/m_shuffle.svg</file>
     </qresource>
     <qresource prefix="/menu">
         <file alias="add.svg">pixmaps/menu/add.svg</file>

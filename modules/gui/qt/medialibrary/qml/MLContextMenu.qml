@@ -55,9 +55,11 @@ NativeMenu {
 
     actions: [{
             "text": qsTr("Play"),
+            "icon": ":/figma/m_play.svg",
             "action": addAndPlay
         }, {
             "text": qsTr("Play as audio"),
+            "icon": ":/figma/m_audio.svg",
             "action": playAsAudio,
             "visible": root.showPlayAsAudioAction
         }, {
@@ -67,6 +69,7 @@ NativeMenu {
                        (root.model instanceof MLAudioModel)
         }, {
             "text": qsTr("Enqueue"),
+            "icon": ":/figma/m_queue.svg",
             "action": enqueue
         }, {
             "text": qsTr("Enqueue as album"),
@@ -75,10 +78,12 @@ NativeMenu {
                        (root.model instanceof MLAudioModel)
         }, {
             "text": qsTr("Add to favorites"),
+            "icon": ":/figma/m_favorite.svg",
             "action": addFavorite,
             "visible": _showAddFavorite
         }, {
             "text": qsTr("Remove from favorites"),
+            "icon": ":/figma/m_favorite.svg",
             "action": removeFavorite,
             "visible": _showRemoveFavorite
         }, {
@@ -86,17 +91,21 @@ NativeMenu {
             "action": (root.showPlayAsAudioAction ? root.addToVideoOnlyPlaylist : root.addToAudioOnlyPlaylist)
         }, {
             "text": qsTr("Add to a playlist"),
+            "icon": ":/figma/m_playlist_add.svg",
             "action": addToAPlaylist
         }, {
             "text": qsTr("Mark as seen"),
+            "icon": ":/figma/m_seen.svg",
             "action": markSeen,
             "visible": _showSeen
         }, {
             "text": qsTr("Mark as unseen"),
+            "icon": ":/figma/m_seen.svg",
             "action": markUnseen,
             "visible": _showUnseen
         }, {
             "text": qsTr("Open Containing Folder"),
+            "icon": ":/figma/m_open_folder.svg",
             "action": openContainingFolder,
             "visible": _openContainingFolder
         }, {
@@ -105,6 +114,7 @@ NativeMenu {
             "visible": _deleteStream
         }, {
             "text": qsTr("Information"),
+            "icon": ":/figma/m_about.svg",
             "action": _signalShowInformation,
             "visible": showInformationAvailable
         },{
@@ -113,6 +123,7 @@ NativeMenu {
             "visible": _deleteFileFromSource
         },{
             "text": qsTr("Media Information"),
+            "icon": ":/figma/m_about.svg",
             "action": function(dataList, options, indexes) {
                 DialogsProvider.mediaInfoDialog(dataList[0][idDataRole])
             },

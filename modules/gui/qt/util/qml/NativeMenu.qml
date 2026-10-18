@@ -33,6 +33,8 @@ QtObject {
       each action is an Object and contains following keys
         "text" - (string) display text of the action
 
+        "icon" - (string) (optional) path of an SVG icon, e.g. ":/figma/m_play.svg"
+
         "action" - (function(dataList, options, indexes)) a function that will be called when action is selected
 
         "visible" - (Boolean or function(dataList,options, indexes) -> Boolean) (optional) a boolean value or function which
@@ -91,7 +93,8 @@ QtObject {
                     || (typeof action.visible === "boolean" && action.visible)
                     || (typeof action.visible === "function" && action.visible(_dataList, _options, _indexes))) {
                 _effectiveActions.push(action)
-                textStrings.push(action.text)
+                textStrings.push(action.hasOwnProperty("icon") ? ({ "text": action.text, "icon_svg": action.icon })
+                                                                : action.text)
             }
         }
 
