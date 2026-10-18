@@ -37,7 +37,7 @@ T.Popup {
                           ? preferredWidth : Number.MAX_VALUE
                     , root.parent.width)
 
-    height: VLCStyle.dp(296, VLCStyle.scale)
+    height: VLCStyle.dp(380, VLCStyle.scale)
 
     // Animations
 
@@ -55,18 +55,13 @@ T.Popup {
         colorSet: ColorContext.Window
     }
 
+    // Figma design: rounded dark card
     background: Rectangle {
+        radius: VLCStyle.dp(10, VLCStyle.scale)
+
         // NOTE: The opacity should be stronger on a light background for readability.
-        color: popupTheme.bg.primary.alpha(popupTheme.palette.isDark ? 0.8 : 0.96)
-
-        Rectangle {
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            height: VLCStyle.margin_xxxsmall
-
-            color: popupTheme.border
-        }
+        color: popupTheme.palette.isDark ? Qt.alpha("#0E0E0E", 0.95)
+                                         : popupTheme.bg.primary.alpha(0.96)
     }
 
     contentItem: T.StackView {

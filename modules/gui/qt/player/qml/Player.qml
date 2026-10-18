@@ -1282,19 +1282,28 @@ FocusScope {
     ControlBar {
         id: controlBar
 
+        // Figma design: the bar floats inside the window (14 px outside margin)
+        readonly property real outerMargin: VLCStyle.dp(14, VLCStyle.scale)
+
         anchors {
             bottom: parent.bottom
             left: parent.left
             right: parent.right
+
+            leftMargin: outerMargin + VLCStyle.applicationHorizontalMargin
+            rightMargin: outerMargin + VLCStyle.applicationHorizontalMargin
+            bottomMargin: outerMargin + VLCStyle.applicationVerticalMargin
         }
 
         hoverEnabled: true
 
         focus: true
 
-        rightPadding: VLCStyle.applicationHorizontalMargin
-        leftPadding: VLCStyle.applicationHorizontalMargin
-        bottomPadding: VLCStyle.applicationVerticalMargin + VLCStyle.margin_xsmall
+        // even inner padding: 11 px top/bottom around the 32 px row = 54 px bar
+        leftPadding: 0
+        rightPadding: 0
+        topPadding: VLCStyle.dp(11, VLCStyle.scale)
+        bottomPadding: VLCStyle.dp(11, VLCStyle.scale)
 
         // Figma design: buttons, time labels and seek bar share a single row
         singleRow: true
@@ -1331,6 +1340,8 @@ FocusScope {
 
         background: Rectangle {
             id: controlBarBackground
+
+            radius: VLCStyle.dp(6, VLCStyle.scale)
 
             visible: !MainCtx.hasEmbededVideo || MainCtx.pinVideoControls || !rootPlayer.displayFadeRectangles
 

@@ -114,6 +114,8 @@
         <file alias="m_seen.svg">pixmaps/figma/m_seen.svg</file>
         <file alias="m_subtitles.svg">pixmaps/figma/m_subtitles.svg</file>
         <file alias="m_shuffle.svg">pixmaps/figma/m_shuffle.svg</file>
+        <file alias="tab_video.svg">pixmaps/figma/tab_video.svg</file>
+        <file alias="tab_video_active.svg">pixmaps/figma/tab_video_active.svg</file>
     </qresource>
     <qresource prefix="/menu">
         <file alias="add.svg">pixmaps/menu/add.svg</file>

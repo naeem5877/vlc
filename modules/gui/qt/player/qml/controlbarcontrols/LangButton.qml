@@ -66,8 +66,8 @@ Widgets.IconToolButton {
 
             parent: root._parentItem
 
-            x: 0
-            y: (parent.positionSliderY - height)
+            x: parent.width - width - VLCStyle.dp(14, VLCStyle.scale)
+            y: (parent.positionSliderY - height - VLCStyle.dp(20, VLCStyle.scale))
             z: 1
 
             focus: true

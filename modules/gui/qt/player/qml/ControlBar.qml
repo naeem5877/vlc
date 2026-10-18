@@ -340,15 +340,16 @@ T.Pane {
 
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.leftMargin: VLCStyle.margin_large
-            Layout.rightMargin: VLCStyle.margin_large
+            Layout.leftMargin: root.singleRow ? VLCStyle.dp(16, VLCStyle.scale) : VLCStyle.margin_large
+            Layout.rightMargin: root.singleRow ? VLCStyle.dp(16, VLCStyle.scale) : VLCStyle.margin_large
 
             identifier: root.identifier
 
             middleComponent: root.singleRow ? seekRowComponent : null
 
-            implicitHeight: MainCtx.pinVideoControls ? VLCStyle.controlLayoutHeightPinned
-                                                     : VLCStyle.controlLayoutHeight
+            implicitHeight: root.singleRow ? VLCStyle.dp(32, VLCStyle.scale)
+                                           : (MainCtx.pinVideoControls ? VLCStyle.controlLayoutHeightPinned
+                                                                       : VLCStyle.controlLayoutHeight)
 
             visible: !model?.empty ?? false
 
