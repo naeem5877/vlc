@@ -343,6 +343,8 @@ libqt_plugin_la_SOURCES = \
 	util/vlchotkeyconverter.cpp util/vlchotkeyconverter.hpp \
 	util/vlctick.cpp \
 	util/vlctick.hpp \
+	util/subtitle_finder.cpp \
+	util/subtitle_finder.hpp \
 	util/shared_input_item.hpp \
 	util/fast_gaussian_blur_template.h \
 	util/effects_image_provider.cpp \
@@ -522,6 +524,7 @@ nodist_libqt_plugin_la_SOURCES = \
 	util/varchoicemodel.moc.cpp \
 	util/variables.moc.cpp \
 	util/vlctick.moc.cpp \
+	util/subtitle_finder.moc.cpp \
 	util/dismiss_popup_event_filter.moc.cpp \
 	util/list_selection_model.moc.cpp \
 	util/vlchotkeyconverter.moc.cpp \
