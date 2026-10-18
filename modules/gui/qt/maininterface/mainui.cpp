@@ -40,6 +40,7 @@
 #include "util/item_key_event_filter.hpp"
 #include "util/imageluminanceextractor.hpp"
 #include "util/keyhelper.hpp"
+#include "util/subtitle_finder.hpp"
 #include "style/systempalette.hpp"
 #include "style/vlcicons.hpp"
 #include "util/navigation_history.hpp"
@@ -414,6 +415,7 @@ void MainUI::registerQMLTypes()
         qmlRegisterSingletonInstance<SVGColorImage>(uri, versionMajor, versionMinor, "SVGColorImage", new SVGColorImage(this));
         qmlRegisterSingletonInstance<VLCAccessImage>(uri, versionMajor, versionMinor, "VLCAccessImage", new VLCAccessImage(this));
         qmlRegisterType<DelayEstimator>( uri, versionMajor, versionMinor, "DelayEstimator" );
+        qmlRegisterType<SubtitleFinder>( uri, versionMajor, versionMinor, "SubtitleFinder" );
         qmlRegisterTypesAndRevisions<WheelToVLCConverter>( uri, versionMajor );
 
         qmlRegisterType<ImageLuminanceExtractor>( uri, versionMajor, versionMinor, "ImageLuminanceExtractor");

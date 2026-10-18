@@ -219,6 +219,7 @@ void VideoSurface::keyPressEvent(QKeyEvent* event)
 void VideoSurface::wheelEvent(QWheelEvent *event)
 {
     m_wheelEventConverter.wheelEvent(event);
+    emit mouseWheeled();
     event->accept();
 }
 #endif

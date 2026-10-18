@@ -288,6 +288,7 @@ public:
 signals:
     void releaseMouseEvents();
     void showToolbarEditorDialog();
+    void showAddSubtitlesDialog();
 
     //visiblity signal
     void openDialogVisibleChanged();

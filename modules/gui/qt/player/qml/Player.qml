@@ -288,6 +288,7 @@ FocusScope {
                         mousePressed.connect(videoSurface.onMouseEvent)
                         mouseReleased.connect(videoSurface.onMouseEvent)
                         mouseDblClicked.connect(videoSurface.onMouseEvent)
+                        mouseWheeled.connect(videoSurface.onMouseEvent)
                     }
 
                     Binding on cursorShape {
@@ -1196,6 +1197,33 @@ FocusScope {
 
             bottomMargin: (rootPlayer._controlsUnderVideo || !controlBar.visible)
                           ? 0 : - VLCStyle.margin_large
+        }
+    }
+
+    // "Add Subtitles" dialog (from the computer or from OpenSubtitles), created on demand
+    Loader {
+        id: addSubtitlesDialogLoader
+
+        active: false
+
+        sourceComponent: AddSubtitlesDialog {
+            rootWindow: rootPlayer
+
+            onClosed: {
+                rootPlayer.forceActiveFocus()
+                // unload once the dialog is done closing
+                Qt.callLater(() => { addSubtitlesDialogLoader.active = false })
+            }
+        }
+
+        onLoaded: item.open()
+    }
+
+    Connections {
+        target: DialogsProvider
+
+        function onShowAddSubtitlesDialog() {
+            addSubtitlesDialogLoader.active = true
         }
     }
 

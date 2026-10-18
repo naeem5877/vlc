@@ -198,7 +198,7 @@ ColumnLayout {
                 text: VLCIcons.add
                 figmaIcon: "plus"
                 description: qsTr("Add")
-                onClicked: DialogsProvider.loadSubtitlesFile()
+                onClicked: DialogsProvider.showAddSubtitlesDialog()
             }
 
             Widgets.IconToolButton {
@@ -350,7 +350,8 @@ ColumnLayout {
                 trackMenuController.requestSubtitlePage()
             }
             else if (action === QmlSubtitleMenu.Download) {
-                Player.openVLsub()
+                // OpenSubtitles without an account / API key
+                DialogsProvider.showAddSubtitlesDialog()
             }
         }
     }

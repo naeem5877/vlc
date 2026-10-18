@@ -125,6 +125,7 @@ signals:
     void mouseReleased( int vlcButton );
     void mouseDblClicked( int vlcButton );
     void mouseMoved( float x, float y );
+    void mouseWheeled();
     void keyPressed(int key, Qt::KeyboardModifiers modifier);
 
     void videoSurfaceProviderChanged();
