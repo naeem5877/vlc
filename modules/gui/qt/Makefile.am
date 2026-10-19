@@ -1189,6 +1189,7 @@ libqml_module_player_a_QML = \
 	player/qml/TracksPageSpeed.qml \
 	player/qml/TracksPageSubtitle.qml \
 	player/qml/TracksListPage.qml \
+	player/qml/AddSubtitlesDialog.qml \
 	player/qml/ControlLayout.qml \
 	player/qml/ControlRepeater.qml \
 	player/qml/NavigationBox.qml
