@@ -1429,7 +1429,12 @@ FocusScope {
         Keys.onPressed: (event) => {
             if (Player.isInteractive)
                 interactiveAutoHideTimer.restart()
-            else
+            // Hotkeys (seek, volume, ...) must not reveal the controls. Keys only
+            // keep an already visible bar alive, Tab/Backtab bring it up to
+            // let the user navigate with the keyboard.
+            else if (controlBar.state === "visible"
+                     || event.key === Qt.Key_Tab
+                     || event.key === Qt.Key_Backtab)
                 playerToolbarVisibilityFSM.keyboardMove()
         }
     }

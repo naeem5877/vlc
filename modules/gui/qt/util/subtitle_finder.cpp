@@ -231,6 +231,9 @@ QString lookupImdbId(const ParsedQuery &parsed, QString *error)
     return fallback;
 }
 
+/** defined below, used by runSearch() */
+QString canonicalLanguage(const QString &code);
+
 void runSearch(const QString &query, const QString &language,
                QVector<SubtitleFinder::Entry> &entries, QString &error)
 {
