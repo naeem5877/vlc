@@ -218,11 +218,37 @@ void VideoSurface::keyPressEvent(QKeyEvent* event)
 #if QT_CONFIG(wheelevent)
 void VideoSurface::wheelEvent(QWheelEvent *event)
 {
+    if (m_wheelNavigation && !(event->modifiers() & Qt::ControlModifier))
+    {
+        // A notch is 120, high resolution wheels and touchpads send smaller deltas
+        m_wheelAccumulator += event->angleDelta().y();
+        if (m_wheelAccumulator >= 120 || m_wheelAccumulator <= -120)
+        {
+            const int direction = (m_wheelAccumulator < 0) ? 1 : -1;
+            m_wheelAccumulator = 0;
+            emit navigationScrolled(direction);
+        }
+        emit mouseWheeled();
+        event->accept();
+        return;
+    }
+
+    m_wheelAccumulator = 0;
     m_wheelEventConverter.wheelEvent(event);
     emit mouseWheeled();
     event->accept();
 }
 #endif
+
+void VideoSurface::setWheelNavigation(bool enabled)
+{
+    if (m_wheelNavigation == enabled)
+        return;
+
+    m_wheelNavigation = enabled;
+    m_wheelAccumulator = 0;
+    emit wheelNavigationChanged();
+}
 
 Qt::CursorShape VideoSurface::getCursorShape() const
 {

@@ -90,12 +90,18 @@ class VideoSurface : public ViewBlockingRectangle
     Q_OBJECT
     Q_PROPERTY(VideoSurfaceProvider* videoSurfaceProvider READ videoSurfaceProvider WRITE setVideoSurfaceProvider NOTIFY videoSurfaceProviderChanged FINAL)
     Q_PROPERTY(Qt::CursorShape cursorShape READ getCursorShape WRITE setCursorShape RESET unsetCursor FINAL)
+    // When set, scrolling the wheel (without Ctrl) does not change the volume but emits 
+avigationScrolled()
+    Q_PROPERTY(bool wheelNavigation READ wheelNavigation WRITE setWheelNavigation NOTIFY wheelNavigationChanged FINAL)
 
 public:
     VideoSurface( QQuickItem* parent = nullptr );
 
     VideoSurfaceProvider* videoSurfaceProvider() const { return m_provider; };
     void setVideoSurfaceProvider(VideoSurfaceProvider *newVideoSurfaceProvider);
+
+    bool wheelNavigation() const { return m_wheelNavigation; }
+    void setWheelNavigation(bool enabled);
 
 protected:
     QSGNode *updatePaintNode(QSGNode *, UpdatePaintNodeData *) override;
@@ -126,6 +132,9 @@ signals:
     void mouseDblClicked( int vlcButton );
     void mouseMoved( float x, float y );
     void mouseWheeled();
+    // +1 when scrolling down (next), -1 when scrolling up (previous)
+    void navigationScrolled(int direction);
+    void wheelNavigationChanged();
     void keyPressed(int key, Qt::KeyboardModifiers modifier);
 
     void videoSurfaceProviderChanged();
@@ -137,6 +146,9 @@ private:
     QPointF m_oldHoverPos;
 
     WheelToVLCConverter m_wheelEventConverter;
+
+    bool m_wheelNavigation = false;
+    int m_wheelAccumulator = 0;
 
     QPointer<VideoSurfaceProvider> m_provider;
 

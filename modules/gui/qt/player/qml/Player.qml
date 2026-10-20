@@ -252,10 +252,162 @@ FocusScope {
             id: videoComponent
 
             FocusScope {
+                id: videoScope
+
                 // Video
 
                 focus: true
 
+                // Display aspect ratio (width / height) of the video, 0 while unknown. It comes from a
+                // still frame of the video, which is also used for the side bars below.
+                readonly property real videoAspect: frameProbe.aspectRatio
+
+                // Vertical video (Shorts, Reels...)
+                readonly property bool portraitVideo: (videoAspect > 0) && (videoAspect < 0.85)
+
+                // Go to the next (direction > 0) or the previous (direction < 0) item of the playlist
+                function navigateClip(direction) {
+                    if (clipNavigationCooldown.running)
+                        return
+
+                    if (direction > 0 && MainPlaylistController.hasNext)
+                        MainPlaylistController.next()
+                    else if (direction < 0 && MainPlaylistController.hasPrev)
+                        MainPlaylistController.prev()
+                    else
+                        return
+
+                    clipNavigationCooldown.restart()
+                }
+
+                // One clip per gesture, the wheel and touchpads send a lot of events
+                Timer {
+                    id: clipNavigationCooldown
+
+                    interval: 700
+                }
+
+                SeekThumbnailer {
+                    id: frameProbe
+
+                    mediaUrl: Player.hasVideoOutput ? Player.url : ""
+
+                    // Tiny on purpose: scaled up smoothly, it gives the blurred ambience of the side bars
+                    thumbnailHeight: 32
+
+                    onMediaUrlChanged: {
+                        if (available)
+                            requestPositionNow(0.1)
+                    }
+
+                    Component.onCompleted: {
+                        if (available)
+                            requestPositionNow(0.1)
+                    }
+                }
+
+                // One side bar: shows its part of the frame, stretched over the whole video surface,
+                // so the bars are continuous. Values are passed as properties because inline components
+                // do not see the ids of this component.
+                component BlurBar : Item {
+                    property url frameSource
+                    property real surfaceWidth
+                    property real surfaceHeight
+
+                    clip: true
+
+                    Image {
+                        x: -parent.x
+                        y: -parent.y
+                        width: parent.surfaceWidth
+                        height: parent.surfaceHeight
+
+                        source: parent.frameSource
+                        fillMode: Image.PreserveAspectCrop
+                        smooth: true
+                        cache: false
+                        asynchronous: true
+                    }
+
+                    Rectangle {
+                        anchors.fill: parent
+
+                        color: "black"
+                        opacity: 0.4
+                    }
+                }
+
+                // The video is shown by the compositor under the interface, so this must only cover
+                // the bars around it, never the video. They are as thick as the gap between the video
+                // (fitted in the surface) and the edges of the surface, whichever the shape of the window.
+                Item {
+                    id: sideBars
+
+                    anchors.fill: parent
+
+                    readonly property real surfaceAspect: (width > 0 && height > 0) ? (width / height) : 0
+                    readonly property bool ready: (videoScope.videoAspect > 0)
+                                                  && (surfaceAspect > 0)
+                                                  && (frameProbe.source.toString() !== "")
+
+                    // rounded down so that the bars never overlap the video
+                    readonly property real barWidth: (ready && videoScope.videoAspect < surfaceAspect)
+                                                     ? Math.floor((width - height * videoScope.videoAspect) / 2) : 0
+                    readonly property real barHeight: (ready && videoScope.videoAspect > surfaceAspect)
+                                                      ? Math.floor((height - width / videoScope.videoAspect) / 2) : 0
+
+                    BlurBar {
+                        visible: sideBars.barWidth > 1
+
+                        frameSource: frameProbe.source
+                        surfaceWidth: sideBars.width
+                        surfaceHeight: sideBars.height
+
+                        x: 0
+                        y: 0
+                        width: sideBars.barWidth
+                        height: sideBars.height
+                    }
+
+                    BlurBar {
+                        visible: sideBars.barWidth > 1
+
+                        frameSource: frameProbe.source
+                        surfaceWidth: sideBars.width
+                        surfaceHeight: sideBars.height
+
+                        x: sideBars.width - sideBars.barWidth
+                        y: 0
+                        width: sideBars.barWidth
+                        height: sideBars.height
+                    }
+
+                    BlurBar {
+                        visible: sideBars.barHeight > 1
+
+                        frameSource: frameProbe.source
+                        surfaceWidth: sideBars.width
+                        surfaceHeight: sideBars.height
+
+                        x: 0
+                        y: 0
+                        width: sideBars.width
+                        height: sideBars.barHeight
+                    }
+
+                    BlurBar {
+                        visible: sideBars.barHeight > 1
+
+                        frameSource: frameProbe.source
+                        surfaceWidth: sideBars.width
+                        surfaceHeight: sideBars.height
+
+                        x: 0
+                        y: sideBars.height - sideBars.barHeight
+                        width: sideBars.width
+                        height: sideBars.barHeight
+                    }
+                }
                 VideoSurface {
                     id: videoSurface
 
@@ -274,6 +426,12 @@ FocusScope {
                     focus: true
 
                     cursorShape: playerSpecializationLoader.cursorShape
+
+                    // Vertical videos in a playlist: scrolling goes to the previous/next clip
+                    // (Ctrl+scroll still changes the volume)
+                    wheelNavigation: videoScope.portraitVideo && MainPlaylistController.count > 1
+
+                    onNavigationScrolled: (direction) => videoScope.navigateClip(direction)
 
                     function onMouseEvent() {
                         //short interval for mouse events
@@ -299,7 +457,39 @@ FocusScope {
                     }
 
                     TouchDragHandler {
+                        enabled: !videoSurface.wheelNavigation
+                    }
 
+                    // Swipe up for the next clip, down for the previous one
+                    DragHandler {
+                        id: clipSwipeHandler
+
+                        acceptedDevices: PointerDevice.TouchScreen
+                        enabled: videoSurface.wheelNavigation
+
+                        target: null
+                        minimumPointCount: 1
+                        maximumPointCount: 1
+                        xAxis.enabled: false
+                        yAxis.enabled: true
+                        dragThreshold: VLCStyle.margin_normal
+
+                        property real lastTranslationY: 0
+
+                        onActiveTranslationChanged: {
+                            if (active)
+                                lastTranslationY = activeTranslation.y
+                        }
+
+                        onActiveChanged: {
+                            if (active) {
+                                lastTranslationY = 0
+                            } else {
+                                if (Math.abs(lastTranslationY) >= VLCStyle.dp(72, VLCStyle.scale))
+                                    videoScope.navigateClip((lastTranslationY < 0) ? 1 : -1)
+                                lastTranslationY = 0
+                            }
+                        }
                     }
                 }
 
