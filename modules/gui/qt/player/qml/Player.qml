@@ -446,7 +446,8 @@ FocusScope {
                         mousePressed.connect(videoSurface.onMouseEvent)
                         mouseReleased.connect(videoSurface.onMouseEvent)
                         mouseDblClicked.connect(videoSurface.onMouseEvent)
-                        mouseWheeled.connect(videoSurface.onMouseEvent)
+                        // NOTE: mouseWheeled is deliberately not connected: scrolling
+                        // (volume) must not reveal the player controls
                     }
 
                     Binding on cursorShape {

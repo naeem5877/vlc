@@ -90,8 +90,7 @@ class VideoSurface : public ViewBlockingRectangle
     Q_OBJECT
     Q_PROPERTY(VideoSurfaceProvider* videoSurfaceProvider READ videoSurfaceProvider WRITE setVideoSurfaceProvider NOTIFY videoSurfaceProviderChanged FINAL)
     Q_PROPERTY(Qt::CursorShape cursorShape READ getCursorShape WRITE setCursorShape RESET unsetCursor FINAL)
-    // When set, scrolling the wheel (without Ctrl) does not change the volume but emits 
-avigationScrolled()
+    // When set, scrolling the wheel (without Ctrl) does not change the volume but emits navigationScrolled()
     Q_PROPERTY(bool wheelNavigation READ wheelNavigation WRITE setWheelNavigation NOTIFY wheelNavigationChanged FINAL)
 
 public:
