@@ -41,6 +41,7 @@
 #include "util/imageluminanceextractor.hpp"
 #include "util/keyhelper.hpp"
 #include "util/subtitle_finder.hpp"
+#include "util/seek_thumbnailer.hpp"
 #include "style/systempalette.hpp"
 #include "style/vlcicons.hpp"
 #include "util/navigation_history.hpp"
@@ -164,6 +165,7 @@ bool MainUI::setup(QQmlEngine* engine)
         new EffectsImageProvider(engine);
     engine->addImageProvider(QStringLiteral("svgcolor"), new SVGColorImageImageProvider());
     engine->addImageProvider(QStringLiteral("vlcaccess"), new VLCAccessImageProvider());
+    engine->addImageProvider(QStringLiteral("seekthumb"), new SeekThumbnailProvider());
 
     m_component  = new QQmlComponent(engine, QStringLiteral("qrc:/qt/qml/VLC/MainInterface/MainInterface.qml"), QQmlComponent::PreferSynchronous, engine);
     if (m_component->isLoading())
@@ -416,6 +418,8 @@ void MainUI::registerQMLTypes()
         qmlRegisterSingletonInstance<VLCAccessImage>(uri, versionMajor, versionMinor, "VLCAccessImage", new VLCAccessImage(this));
         qmlRegisterType<DelayEstimator>( uri, versionMajor, versionMinor, "DelayEstimator" );
         qmlRegisterType<SubtitleFinder>( uri, versionMajor, versionMinor, "SubtitleFinder" );
+        SeekThumbnailer::setInterface( m_intf );
+        qmlRegisterType<SeekThumbnailer>( uri, versionMajor, versionMinor, "SeekThumbnailer" );
         qmlRegisterTypesAndRevisions<WheelToVLCConverter>( uri, versionMajor );
 
         qmlRegisterType<ImageLuminanceExtractor>( uri, versionMajor, versionMinor, "ImageLuminanceExtractor");

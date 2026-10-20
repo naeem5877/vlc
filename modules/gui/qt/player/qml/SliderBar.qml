@@ -104,6 +104,19 @@ T.ProgressBar {
     Widgets.PointingToolTipAttached.pos: Qt.point(hoverHandler.hovered ? Helpers.clamp(hoverHandler.point.position.x, 0, control.availableWidth)
                                                                        : (control.visualPosition * control.width), 0)
 
+    // Thumbnail of the frame under the pointer (local video files only)
+    SeekPreview {
+        mediaUrl: Player.hasVideoOutput ? Player.url : ""
+
+        anchorItem: control
+        anchorX: hoverHandler.point.position.x
+
+        position: hoverHandler.hovered ? Helpers.clamp(hoverHandler.point.position.x / control.width, 0, 1)
+                                       : control.visualPosition
+
+        active: hoverHandler.hovered || dragHandler.active
+    }
+
     FSM {
         id: fsm
         signal playerUpdatePosition(real position)
